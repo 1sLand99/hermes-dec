@@ -1,9 +1,33 @@
 #!/usr/bin/python3
-#-*- encoding: Utf-8 -*-
+# -*- encoding: Utf-8 -*-
 from typing import List, Tuple, Dict, Set, Sequence, Union, Optional, Any
 from sys import stderr
 
-from defs import HermesDecompiler, DecompiledFunctionBody, Environment, TokenString, ForInLoopInit, ForInLoopNextIter, RawToken, ReturnDirective, ThrowDirective, JumpNotCondition, JumpCondition, AssignmentToken, BasicBlock, LeftParenthesisToken, RightHandRegToken,  RightParenthesisToken, LeftHandRegToken, NewInnerEnvironmentToken, NewEnvironmentToken, StoreToEnvironment, GetEnvironmentToken, LoadFromEnvironmentToken, FunctionTableIndex
+from defs import (
+    HermesDecompiler,
+    DecompiledFunctionBody,
+    Environment,
+    TokenString,
+    ForInLoopInit,
+    ForInLoopNextIter,
+    RawToken,
+    ReturnDirective,
+    ThrowDirective,
+    JumpNotCondition,
+    JumpCondition,
+    AssignmentToken,
+    BasicBlock,
+    LeftParenthesisToken,
+    RightHandRegToken,
+    RightParenthesisToken,
+    LeftHandRegToken,
+    NewInnerEnvironmentToken,
+    NewEnvironmentToken,
+    StoreToEnvironment,
+    GetEnvironmentToken,
+    LoadFromEnvironmentToken,
+    FunctionTableIndex,
+)
 
 # Implementation for the "NameNonLocalClosureVariables" algorithm (see the .odt notes)
 
@@ -21,7 +45,10 @@ from defs import HermesDecompiler, DecompiledFunctionBody, Environment, TokenStr
             the caller's environment
 """
 
-def pass4_name_closure_vars(state : HermesDecompiler, function_body : DecompiledFunctionBody):
+
+def pass4_name_closure_vars(
+    state: HermesDecompiler, function_body: DecompiledFunctionBody
+):
 
     AT = AssignmentToken
 
@@ -30,51 +57,71 @@ def pass4_name_closure_vars(state : HermesDecompiler, function_body : Decompiled
     LHRT = LeftHandRegToken
     RHRT = RightHandRegToken
 
-    function_body.local_items : Dict[int, Environment] = {}
-    
+    function_body.local_items: Dict[int, Environment] = {}
+
     parent_environment = function_body.parent_environment
 
     lines = function_body.statements
     for index, line in enumerate(lines):
         for token in line.tokens:
-
             if isinstance(token, NewEnvironmentToken):
-            
-                function_body.local_items[token.register] = Environment(parent_environment, (parent_environment.nesting_quantity + 1) if parent_environment else 0, {})
-                line.tokens = [] # Silence this instruction in the produced decompiled code
+                function_body.local_items[token.register] = Environment(
+                    parent_environment,
+                    (parent_environment.nesting_quantity + 1)
+                    if parent_environment
+                    else 0,
+                    {},
+                )
+                line.tokens = []  # Silence this instruction in the produced decompiled code
 
             elif isinstance(token, NewInnerEnvironmentToken):
-
                 outer_environment = function_body.local_items[token.parent_register]
-                function_body.local_items[token.dest_register] = Environment(outer_environment, (outer_environment.nesting_quantity + 1), {})
+                function_body.local_items[token.dest_register] = Environment(
+                    outer_environment, (outer_environment.nesting_quantity + 1), {}
+                )
 
             elif isinstance(token, GetEnvironmentToken):
-
                 environment = parent_environment
                 for nesting in range(token.nesting_level):
                     environment = environment.parent_environment
-                
-                function_body.local_items[token.register] = environment
-                line.tokens = [] # Silence this instruction in the produced decompiled code
-    
-            elif isinstance(token, FunctionTableIndex):
 
+                function_body.local_items[token.register] = environment
+                line.tokens = []  # Silence this instruction in the produced decompiled code
+
+            elif isinstance(token, FunctionTableIndex):
                 if token.environment_id is not None:
-                    token.parent_environment = function_body.local_items[token.environment_id]
+                    token.parent_environment = function_body.local_items[
+                        token.environment_id
+                    ]
 
             elif isinstance(token, StoreToEnvironment):
-                varname = '_closure%d_slot%d' % (function_body.local_items[token.env_register].nesting_quantity,
-                    token.slot_index)
-                
-                if token.slot_index not in function_body.local_items[token.env_register].slot_index_to_varname:
-                    function_body.local_items[token.env_register].slot_index_to_varname[token.slot_index] = varname
-                    line.tokens = [RT('var ' + varname), AT(), RHRT(token.value_register)]
-                
-                else: # This a closure-referenced variable reassignment
+                varname = "_closure%d_slot%d" % (
+                    function_body.local_items[token.env_register].nesting_quantity,
+                    token.slot_index,
+                )
+
+                if (
+                    token.slot_index
+                    not in function_body.local_items[
+                        token.env_register
+                    ].slot_index_to_varname
+                ):
+                    function_body.local_items[token.env_register].slot_index_to_varname[
+                        token.slot_index
+                    ] = varname
+                    line.tokens = [
+                        RT("var " + varname),
+                        AT(),
+                        RHRT(token.value_register),
+                    ]
+
+                else:  # This a closure-referenced variable reassignment
                     line.tokens = [RT(varname), AT(), RHRT(token.value_register)]
-                
+
             elif isinstance(token, LoadFromEnvironmentToken):
-                var_name = '_closure%d_slot%d' % (function_body.local_items[token.register].nesting_quantity,
-                    token.slot_index)
-                
+                var_name = "_closure%d_slot%d" % (
+                    function_body.local_items[token.register].nesting_quantity,
+                    token.slot_index,
+                )
+
                 line.tokens[2] = RT(var_name)
