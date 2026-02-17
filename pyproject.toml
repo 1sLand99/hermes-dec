@@ -5,7 +5,9 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "hermes-dec"
 version = "0.1.0"
-author = "P1 Security - Marin Moulinier"
+authors = [
+  {name = "P1 Security - Marin Moulinier"},
+]
 description = """A tool for reverse engineering React Native \
     bytecode files, including disassembly and decompilation \
     facilities"""
