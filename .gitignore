@@ -12,4 +12,5 @@ tests/assets/*di*
 *.glade#
 *~
 *.swp
+.python-version
 .vscode

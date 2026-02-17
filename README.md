@@ -27,11 +27,12 @@ On non-Hermes based setups of React Native, this file usually contains minified/
 
 The application itself only relies on the Python 3.x standard library for now.
 
-You can install the tool through the following commands on Ubuntu 22.04:
+You can install the tool through the following commands:
 
 ```
-sudo apt install -y python3-pip
-sudo pip3 install --upgrade git+https://github.com/P1sec/hermes-dec
+uv tool install git+https://github.com/P1sec/hermes-dec
+# Or with pipx:
+pipx install git+https://github.com/P1sec/hermes-dec
 ```
 
 Certain internal development utilities may however require to install `libclang` for Python:
