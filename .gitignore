@@ -13,4 +13,5 @@ tests/assets/*di*
 *~
 *.swp
 .python-version
+uv.lock
 .vscode
