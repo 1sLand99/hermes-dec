@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hermes-dec"
+version = "0.1.0"
+author = "P1 Security - Marin Moulinier"
+description = """A tool for reverse engineering React Native \
+    bytecode files, including disassembly and decompilation \
+    facilities"""
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/P1sec/hermes-dec"
+
+[project.scripts]
+hbc-decompiler = "hermes_dec.decompilation.hbc_decompiler:main"
+hbc-disassembler = "hermes_dec.disassembly.hbc_disassembler:main"
+hbc-file-parser = "hermes_dec.parsers.hbc_file_parser:main"
+
+[tool.setuptools]
+package-dir = { hermes_dec = "src" }
+packages = [
+    "hermes_dec",
+    "hermes_dec.parsers",
+    "hermes_dec.parsers.hbc_opcodes",
+    "hermes_dec.decompilation",
+    "hermes_dec.disassembly"
+]
