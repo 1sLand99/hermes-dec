@@ -1,6 +1,6 @@
 `hermes-dec` is a reverse-engineering tool which can be used for disassembling and decompiling React Native files compiled into the Hermes VM bytecode (HBC) format.
 
-For a wider presentation of its purpose, please see our [presentation blog post](https://labs.p1sec.com/?p=2070).
+For a wider presentation of its purpose, please see our [presentation blog post](https://www.p1sec.com/blog/releasing-hermes-dec-an-open-source-disassembler-and-decompiler-for-the-react-native-hermes-bytecode).
 
 ## Background
 
