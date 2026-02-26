@@ -6,13 +6,26 @@ build-backend = "setuptools.build_meta"
 name = "hermes-dec"
 version = "0.1.0"
 authors = [
-  {name = "P1 Security - Marin Moulinier"},
+    {name = "P1 Security - Marin Moulinier"},
 ]
 description = """A tool for reverse engineering React Native \
     bytecode files, including disassembly and decompilation \
     facilities"""
 readme = "README.md"
 requires-python = ">=3.10"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: JavaScript",
+    "Topic :: Software Development :: Disassemblers",
+    "Topic :: Security",
+    "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
+    "Environment :: Console"
+]
+license = "AGPL-3.0-or-later"
+license-files = ["LICENSE"]
 dependencies = []
 
 [project.urls]
